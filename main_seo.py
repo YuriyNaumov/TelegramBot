@@ -118,7 +118,7 @@ async def chat_with_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     except Exception as e:
         logger.error(f'Ошибка при общении с DeepSeek: {e}')
         await waiting_message.delete()
-        await update.message.reply_text('Произошла ошибка при обработке вашего сообщения. Пожалуйста, попробуйте позже.')
+        await update.message.reply_text(f'Произошла ошибка при обработке вашего сообщения. Пожалуйста, попробуйте позже {e}.')
 
     return CHATTING  # Остаёмся в состоянии CHATTING для продолжения диалога
 
