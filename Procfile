@@ -1,1 +1,1 @@
-worker: python auto_restart.py
+worker: python main_seo.py

@@ -216,7 +216,7 @@ def chat_with_deepseek(user_message):
 
 def main():
     application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
-
+    logger.info("Бот запущен")
     # Определение обработчиков разговоров
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
