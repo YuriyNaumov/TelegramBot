@@ -156,7 +156,7 @@ def analyze_content_with_deepseek(content):
         content = content[:max_content_length] + "..."
 
     # Создаем промпт для получения краткого содержания
-    prompt = f"Пожалуйста, сделай краткое содержание следующего текста:\n\n{content}"
+    prompt = f"Пожалуйста, сделай краткое содержание на русском языке следующего текста:\n\n{content}"
 
     # Код обращения к DeepSeek API
     url = "https://api.deepseek.com/chat/completions"
