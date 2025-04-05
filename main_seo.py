@@ -145,7 +145,9 @@ def extract_content_from_url(url):
     for script in soup(['script', 'style']):
         script.decompose()
 
-    text = soup.get_text(separator=' ', strip=True)
+    paragraphs = soup.find_all('p')
+    text = '\n'.join([p.get_text() for p in paragraphs])
+    
     return text
 
 # Функция для отправки контента в DeepSeek API для анализа
