@@ -19,6 +19,8 @@ class RestartBotHandler(FileSystemEventHandler):
            self.process = self.start_bot()
 
 if __name__ == '__main__':
+   print("Запущен auto_restart.py")
+
    script_name = 'main_seo.py'  # Замените на имя вашего файла с ботом
    event_handler = RestartBotHandler(script=script_name)
    observer = Observer()
