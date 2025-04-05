@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 import asyncio
 import requests
@@ -129,7 +130,10 @@ async def exit_chatting(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 
 # Обработка текстовых сообщений вне состояний
 async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE): 
-    await update.message.reply_text('Пожалуйста, выберите действие, нажав одну из кнопок.')
+    await update.message.reply_text('Бот перезапускается, пожалуйста, подождите...')
+
+    # Перезапуск бота
+    os.execv(sys.executable, ['python'] + sys.argv)
 
 # Функция для извлечения текста с веб-страницы
 def extract_content_from_url(url):
