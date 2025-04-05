@@ -1,5 +1,3 @@
-# bot.py
-
 import os
 import logging
 import asyncio
@@ -130,7 +128,7 @@ async def exit_chatting(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     return await start(update, context)
 
 # Обработка текстовых сообщений вне состояний
-async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE): 
     await update.message.reply_text('Пожалуйста, выберите действие, нажав одну из кнопок.')
 
 # Функция для извлечения текста с веб-страницы
