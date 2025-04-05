@@ -156,7 +156,7 @@ def analyze_content_with_deepseek(content):
         content = content[:max_content_length] + "..."
 
     # Создаем промпт для получения краткого содержания
-    prompt = f"Пожалуйста, сделай краткое содержание на русском языке следующего текста:\n\n{content}"
+    prompt = f"Пожалуйста, сделай перевод на русский язык и краткое содержание следующего текста:\n\n{content}"
 
     # Код обращения к DeepSeek API
     url = "https://api.deepseek.com/chat/completions"
@@ -168,7 +168,7 @@ def analyze_content_with_deepseek(content):
     data = {
         "model": "deepseek-reasoner",  # Используем модель 'deepseek-reasoner' для анализа URL
         "messages": [
-            {"role": "system", "content": "You are a professional assistant who summarizes texts."},
+            {"role": "system", "content": "You are a professional assistant who summarizes texts in russian"},
             {"role": "user", "content": prompt}
         ],
         "stream": False
