@@ -133,7 +133,7 @@ async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Бот перезапускается, пожалуйста, подождите...')
 
     # Перезапуск бота
-    os.execv(sys.executable, ['python'] + sys.argv)
+    sys.exit()
 
 # Функция для извлечения текста с веб-страницы
 def extract_content_from_url(url):
