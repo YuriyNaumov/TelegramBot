@@ -130,10 +130,12 @@ async def exit_chatting(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 
 # Обработка текстовых сообщений вне состояний
 async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE): 
+    global should_restart
     await update.message.reply_text('Бот перезапускается, пожалуйста, подождите...')
+    should_restart = True
 
     # Перезапуск бота
-    sys.exit()
+    await context.application.stop()
 
 # Функция для извлечения текста с веб-страницы
 def extract_content_from_url(url):
@@ -221,33 +223,40 @@ def chat_with_deepseek(user_message):
     return reply
 
 def main():
-    application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
-    logger.info("Бот запущен")
-    # Определение обработчиков разговоров
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
-        states={
-            CHOOSING: [
-                MessageHandler(filters.Regex('^🔍 Анализировать URL$'), analyze_url_start),
-                MessageHandler(filters.Regex('^💬 Поболтать$'), start_chatting),
-            ],
-            ANALYZE_URL: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, analyze_url_received)
-            ],
-            CHATTING: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, chat_with_user),
-                CommandHandler('exit', exit_chatting)
-            ]
-        },
-        fallbacks=[CommandHandler('exit', exit_chatting)],
-    )
+    while True:
+        application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+        logger.info("Бот запущен")
+        # Определение обработчиков разговоров
+        conv_handler = ConversationHandler(
+            entry_points=[CommandHandler('start', start)],
+            states={
+                CHOOSING: [
+                    MessageHandler(filters.Regex('^🔍 Анализировать URL$'), analyze_url_start),
+                    MessageHandler(filters.Regex('^💬 Поболтать$'), start_chatting),
+                ],
+                ANALYZE_URL: [
+                    MessageHandler(filters.TEXT & ~filters.COMMAND, analyze_url_received)
+                ],
+                CHATTING: [
+                    MessageHandler(filters.TEXT & ~filters.COMMAND, chat_with_user),
+                    CommandHandler('exit', exit_chatting)
+                ]
+            },
+            fallbacks=[CommandHandler('exit', exit_chatting)],
+        )
 
-    # Обработчик для неизвестных сообщений вне разговоров
-    application.add_handler(conv_handler)
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, unknown_message))
+        # Обработчик для неизвестных сообщений вне разговоров
+        application.add_handler(conv_handler)
+        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, unknown_message))
 
-    # Запуск бота
-    application.run_polling()
+        # Запуск бота
+        application.run_polling()
+
+        if not should_restart:
+            break
+        else:
+            # Сбросить флаг перезапуска
+            should_restart = False
 
 if __name__ == '__main__':
     main()
