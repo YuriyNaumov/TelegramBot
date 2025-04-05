@@ -1,0 +1,14 @@
+# Environment files
+.env
+seobotkey.json
+
+# Python 
+__pycache__/
+*.py[cod]
+*.log
+*.pot
+*.sqlite3
+
+# IDE 
+.vscode/
+.idea/
