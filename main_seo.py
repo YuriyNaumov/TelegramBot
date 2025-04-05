@@ -79,7 +79,7 @@ async def analyze_url_received(update: Update, context: ContextTypes.DEFAULT_TYP
     except Exception as e:
         logger.error(f'Ошибка при обработке URL: {e}')
         await waiting_message.delete()
-        await update.message.reply_text('Произошла ошибка при обработке URL. Пожалуйста, убедитесь, что вы отправили корректный URL.')
+        await update.message.reply_text(f'Произошла ошибка при обработке URL. Пожалуйста, убедитесь, что вы отправили корректный URL.- {e}')
 
     # Возврат к выбору действия
     return await start(update, context)
