@@ -141,7 +141,7 @@ async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def extract_content_from_url(url):
     headers = {'User-Agent': 'Mozilla/5.0'}
     try:
-        response = requests.get(url, headers=headers, timeout=30)
+        response = requests.get(url, headers=headers, timeout=120)
     except Timeout:
         raise Timeout("Превышено время ожидания при получении контента URL.")
     response.raise_for_status()
