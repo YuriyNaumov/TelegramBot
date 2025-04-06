@@ -14,6 +14,7 @@ from telegram.ext import (
     ConversationHandler,
     filters,
 )
+from telegram import KeyboardButton
 import re
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
@@ -39,19 +40,22 @@ logger = logging.getLogger(__name__)
 CHOOSING, ANALYZE_URL, CHATTING = range(3)
 
 # Команда /start
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     reply_keyboard = [
-        [
-             [KeyboardButton('Анализировать URL'), KeyboardButton('Поболтать')],
-             [KeyboardButton('Перезагрузить')]
-        ]
+        [KeyboardButton('Анализировать URL'), KeyboardButton('Поболтать')],
+        [KeyboardButton('Перезагрузить')]
     ]
 
     await update.message.reply_text(
         'Привет! Я бот для анализа URL и бесед.\n\n'
         'Выберите действие:',
-        reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+        reply_markup=ReplyKeyboardMarkup(
+            reply_keyboard, one_time_keyboard=True, resize_keyboard=True
+        )
     )
+
     return CHOOSING
 
 # Обработчик кнопки "Анализировать URL"
