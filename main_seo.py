@@ -255,7 +255,7 @@ async def main():
         # Запуск бота
             # Удаление вебхука перед запуском поллинга
         await application.bot.delete_webhook(drop_pending_updates=True)
-        application.run_polling()
+        await application.run_polling()
 
         if not should_restart:
             break
