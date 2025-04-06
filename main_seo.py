@@ -225,46 +225,36 @@ def chat_with_deepseek(user_message):
     reply = result['choices'][0]['message']['content']
     return reply
 
-async def main():
-    while True:
-        application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
-        logger.info("Бот запущен")
-        # Определение обработчиков разговоров
-        conv_handler = ConversationHandler(
-            entry_points=[CommandHandler('start', start)],
-            states={
-                CHOOSING: [
-                    MessageHandler(filters.Regex('^🔍 Анализировать URL$'), analyze_url_start),
-                    MessageHandler(filters.Regex('^💬 Поболтать$'), start_chatting),
-                ],
-                ANALYZE_URL: [
-                    MessageHandler(filters.TEXT & ~filters.COMMAND, analyze_url_received)
-                ],
-                CHATTING: [
-                    MessageHandler(filters.TEXT & ~filters.COMMAND, chat_with_user),
-                    CommandHandler('exit', exit_chatting)
-                ]
-            },
-            fallbacks=[CommandHandler('exit', exit_chatting)],
-        )
+def main():
+    application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+    logger.info("Бот запущен.")
 
-        # Обработчик для неизвестных сообщений вне разговоров
-        application.add_handler(conv_handler)
-        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, unknown_message))
+    # Определение обработчиков разговоров
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler('start', start)],
+        states={
+            CHOOSING: [
+                MessageHandler(filters.Regex('^(Анализировать URL)$'), analyze_url_start),
+                MessageHandler(filters.Regex('^(Поболтать)$'), start_chatting),
+            ],
+            ANALYZE_URL: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, analyze_url_received)
+            ],
+            CHATTING: [
+                MessageHandler(filters.Regex('^(выход)$'), exit_chatting),
+                MessageHandler(filters.TEXT & ~filters.COMMAND, chat_with_user)
+            ]
+        },
+        fallbacks=[CommandHandler('start', start)],
+    )
 
-        # Запуск бота
-            # Удаление вебхука перед запуском поллинга
-        await application.bot.delete_webhook(drop_pending_updates=True)
-        await application.run_polling()
+    # Добавление обработчиков в приложение
+    application.add_handler(conv_handler)
 
-        if not should_restart:
-            break
-        else:
-            # Сбросить флаг перезапуска
-            should_restart = False
-
+    # Запуск бота
+    application.run_polling(drop_pending_updates=True)
 
 
 if __name__ == '__main__':
     
-    asyncio.run(main())
+    main()
