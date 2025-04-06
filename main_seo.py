@@ -251,7 +251,11 @@ def main():
     # Добавление обработчиков в приложение
     application.add_handler(conv_handler)
 
-    # Запуск бота
+    # Обработчик для неизвестных сообщений и команд
+    application.add_handler(MessageHandler(filters.COMMAND, unknown_message))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, unknown_message))
+
+    # Запуск бота с параметром drop_pending_updates=True
     application.run_polling(drop_pending_updates=True)
 
 
