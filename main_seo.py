@@ -132,13 +132,10 @@ async def exit_chatting(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     return await start(update, context)
 
 # Обработка текстовых сообщений вне состояний
-async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE): 
-    global should_restart
-    await update.message.reply_text('Бот перезапускается, пожалуйста, подождите...')
-    should_restart = True
-
-    # Перезапуск бота
-    await context.application.stop()
+async def unknown_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+   await update.message.reply_text(
+       'Извините, я не понимаю эту команду. Пожалуйста, выберите действие из меню или введите корректную команду.'
+   )
 
 # Функция для извлечения текста с веб-страницы
 def extract_content_from_url(url):
