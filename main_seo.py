@@ -16,6 +16,9 @@ from telegram.ext import (
 )
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
+import subprocess
+import time
+import threading
 
 # Загрузка переменных окружения из .env файла
 load_dotenv()
@@ -258,5 +261,32 @@ def main():
             # Сбросить флаг перезапуска
             should_restart = False
 
+def check_for_updates(interval=60):
+    while True:
+        try:
+            # Проверяем наличие обновлений
+            result = subprocess.run(['git', 'fetch'], capture_output=True, text=True)
+            if result.returncode != 0:
+                logger.error(f'Ошибка при выполнении git fetch: {result.stderr}')
+            else:
+                # Проверяем, есть ли новые коммиты в удаленной ветке
+                local_head = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip()
+                remote_head = subprocess.check_output(['git', 'rev-parse', '@{u}']).strip()
+                if local_head != remote_head:
+                    logger.info('Обнаружены обновления в репозитории, обновляем код и перезапускаем бота.')
+                    # Выполняем git pull
+                    pull_result = subprocess.run(['git', 'pull'], capture_output=True, text=True)
+                    if pull_result.returncode != 0:
+                        logger.error(f'Ошибка при выполнении git pull: {pull_result.stderr}')
+                    else:
+                        # Перезапускаем бота
+                        logger.info('Перезапуск бота.')
+                        os.execv(sys.executable, [sys.executable] + sys.argv)
+        except Exception as e:
+            logger.error(f'Ошибка при проверке обновлений: {e}')
+        time.sleep(interval)
+
 if __name__ == '__main__':
+    update_thread = threading.Thread(target=check_for_updates, daemon=True)
+    update_thread.start()
     main()
