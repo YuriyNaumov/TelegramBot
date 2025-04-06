@@ -225,7 +225,7 @@ def chat_with_deepseek(user_message):
     reply = result['choices'][0]['message']['content']
     return reply
 
-def main():
+async def main():
     while True:
         application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
         logger.info("Бот запущен")
@@ -253,6 +253,8 @@ def main():
         application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, unknown_message))
 
         # Запуск бота
+            # Удаление вебхука перед запуском поллинга
+        await application.bot.delete_webhook(drop_pending_updates=True)
         application.run_polling()
 
         if not should_restart:
@@ -265,4 +267,4 @@ def main():
 
 if __name__ == '__main__':
     
-    main()
+    asyncio.run(main())
