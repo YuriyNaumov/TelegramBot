@@ -234,19 +234,27 @@ def main():
     logger.info("Бот запущен.")
 
     # Определение обработчиков разговоров
+    pattern_analyze_url = re.compile('Анализировать URL', re.IGNORECASE)
+    pattern_chat = re.compile('Поболтать', re.IGNORECASE)
+    pattern_reload = re.compile('Перезагрузить', re.IGNORECASE)
+    pattern_exit = re.compile('выход', re.IGNORECASE)
+
+    application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+    
+    
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
             CHOOSING: [
-                MessageHandler(filters.Regex('Анализировать URL', flags=re.IGNORECASE), analyze_url_start),
-                MessageHandler(filters.Regex('Поболтать', flags=re.IGNORECASE), start_chatting),
-                MessageHandler(filters.Regex('Перезагрузить', flags=re.IGNORECASE), reboot_bot)
+                MessageHandler(filters.Regex(pattern_analyze_url), analyze_url_start),
+                MessageHandler(filters.Regex(pattern_chat), start_chatting),
+                MessageHandler(filters.Regex(pattern_reload), reboot_bot),
             ],
             ANALYZE_URL: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, analyze_url_received)
             ],
             CHATTING: [
-                MessageHandler(filters.Regex('^(выход)$'), exit_chatting),
+                MessageHandler(filters.Regex(pattern_exit), exit_chatting),
                 MessageHandler(filters.TEXT & ~filters.COMMAND, chat_with_user)
             ]
         },
@@ -255,6 +263,7 @@ def main():
 
     # Добавление обработчиков в приложение
     application.add_handler(conv_handler)
+
 
     # Обработчик для неизвестных сообщений и команд
     application.add_handler(MessageHandler(filters.COMMAND, unknown_message))
