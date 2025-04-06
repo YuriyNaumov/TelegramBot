@@ -41,8 +41,8 @@ CHOOSING, ANALYZE_URL, CHATTING = range(3)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     reply_keyboard = [
         [
-            KeyboardButton('🔍 Анализировать URL'),
-            KeyboardButton('💬 Поболтать')
+             [KeyboardButton('Анализировать URL'), KeyboardButton('Поболтать')],
+             [KeyboardButton('Перезагрузить')]
         ]
     ]
 
@@ -222,6 +222,12 @@ def chat_with_deepseek(user_message):
     reply = result['choices'][0]['message']['content']
     return reply
 
+async def reboot_bot(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await update.message.reply_text('Бот перезапускается...')
+    # Здесь вы можете добавить логику для сброса состояния или перезапуска
+    # Например, вернём пользователя в начальное состояние
+    return await start(update, context)
+
 def main():
     application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
     logger.info("Бот запущен.")
@@ -231,8 +237,9 @@ def main():
         entry_points=[CommandHandler('start', start)],
         states={
             CHOOSING: [
-                MessageHandler(filters.Regex('^(Анализировать URL)$'), analyze_url_start),
-                MessageHandler(filters.Regex('^(Поболтать)$'), start_chatting),
+                MessageHandler(filters.Regex('Анализировать URL', flags=re.IGNORECASE), analyze_url_start),
+                MessageHandler(filters.Regex('Поболтать', flags=re.IGNORECASE), start_chatting),
+                MessageHandler(filters.Regex('Перезагрузить', flags=re.IGNORECASE), reboot_bot)
             ],
             ANALYZE_URL: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, analyze_url_received)
